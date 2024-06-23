@@ -1,0 +1,116 @@
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Online_Banking_Portal.BL;
+using Online_Banking_Portal.DAL.Models;
+using Online_Banking_Portal.Entities;
+using System.Net;
+namespace Online_Banking_Portal.API.Controllers
+  
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class LoanController : ControllerBase
+    {
+
+        private readonly OnlineBankingPortalContext _context;
+        public LoanController()
+        {
+
+        }
+
+        [HttpGet]
+        
+        public async Task<ActionResult<IEnumerable<LoanType>>> GetLoan()
+        {
+            LoanBL loan = new LoanBL();
+
+            return loan.GetLoanBL().ToList();
+        }
+
+        [HttpPost]
+        [Route("POST/Loan/LoanApplication")]
+        public async Task<ActionResult<LoanApplication>> PostLoanApplication(LoanApplication loanApplication)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            LoanBL objBL = new LoanBL();
+
+            HttpStatusCode objCode;
+
+            objCode = objBL.AddLoanApplicationBL(loanApplication);
+
+
+
+            if (objCode == HttpStatusCode.Created)
+            {
+                
+                return Ok(objCode);
+            }
+
+            return Ok(objCode);
+
+
+        }
+
+
+        [HttpPut]
+        [Route("PUT/Loan/ApproveLoanApplication")]
+        public async Task<IActionResult> PutApproveLoan(LoanApplication loanApplication)
+        {
+            LoanBL objBL = new LoanBL();
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            try
+            {
+                HttpStatusCode objCode;
+                objCode = objBL.ApproveLoanBL(loanApplication);
+                if (objCode == HttpStatusCode.Accepted)
+                {
+                    return Ok(objCode);
+                }
+
+            }
+            catch (Exception e)
+            {
+                throw;
+            }
+
+            return NoContent();
+        }
+
+        [HttpPost]
+        [Route("POST/Loan/LoanPayment")]
+        public async Task<ActionResult<LoanPayment>> PostLoanPayment(LoanPayment loanPayment)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            LoanBL objBL = new LoanBL();
+
+            HttpStatusCode objCode;
+
+            objCode = objBL.PayLoanEMIBL(loanPayment);
+
+
+
+            if (objCode == HttpStatusCode.Created)
+            {
+                
+                return Ok(objCode);
+            }
+
+            return Ok(objCode);
+
+
+        }
+
+    }
+}
