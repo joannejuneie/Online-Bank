@@ -1,0 +1,164 @@
+using Microsoft.EntityFrameworkCore;
+using Online_Banking_Portal.DAL.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Online_Banking_Portal.Entities;
+using System.Net;
+using Online_Banking_Portal.Exceptions;
+namespace Online_Banking_Portal.DAL
+
+{
+    public class LoanDAL
+    {
+        private readonly OnlineBankingPortalContext _context = new OnlineBankingPortalContext();
+
+        public LoanDAL()
+        {
+
+        }
+
+        public IEnumerable<LoanType> GetLoanDAL()
+        {
+            try
+            {
+                List<LoanType> loan = new List<LoanType>();
+
+                loan = (from i in _context.LoanTypes
+                                 
+                                 select new LoanType
+                                 {
+                                     LoanTypeId = i.LoanTypeId,
+                                     LoanTypeName = i.LoanTypeName
+
+                                 }).ToList();
+                return loan;
+            }
+            catch (Exception ex)
+            {
+                throw new SystemException(ex.Message);
+            }
+
+        }
+
+        public HttpStatusCode AddLoanApplicationDAL(LoanApplication loanApplication)
+        {
+            loanApplication.LoanStatus = "In Process";
+            _context.LoanApplications.Add(loanApplication);
+            try
+            {
+                int noOfRowsAffected = _context.SaveChanges();
+
+                if (noOfRowsAffected > 0)
+                {
+                    return HttpStatusCode.Created;
+                }
+            }
+            catch
+            (Exception e)
+            {
+
+                throw new OnlineBankExceptions(e.Message);
+
+
+            }
+         
+            return HttpStatusCode.Created;
+        }
+
+        public HttpStatusCode ApproveLoanDAL(LoanApplication loanApplication)
+        {
+            //_context.BloodDonors.Add(bloodDonor);
+            LoanApplication approved = LoanApplicationExists(loanApplication.LoanApplicationId);
+            LoanEMI loanEMI = new LoanEMI();
+            try
+            {
+                if (approved != null)
+                {
+                    LoanApplication loanIdTenure = GetLoanTypeId(loanApplication.LoanApplicationId);
+
+                   double ROI = Convert.ToDouble(GetROI(Convert.ToInt32(loanIdTenure.LoanTypeId)))/100;
+
+                    double finalAmount = Convert.ToInt32(loanApplication.AmountSanctioned)*(Math.Pow((1+ROI), Convert.ToInt32(loanIdTenure.Tenure)));
+                    double monthlyInterest=CalculateMonthlyInterest(finalAmount, Convert.ToInt32(loanIdTenure.Tenure));
+                    loanEMI.LoanApplicationId= loanApplication.LoanApplicationId;
+                    loanEMI.EMI = Convert.ToInt32(monthlyInterest);
+
+                    _context.LoanEMIs.Add(loanEMI);
+                   approved.LoanStatus =loanApplication.LoanStatus;
+                    approved.AmountSanctioned=loanApplication.AmountSanctioned;
+                    approved.PendingPayment= Convert.ToInt32(finalAmount);
+
+                    _context.SaveChanges();
+                    return HttpStatusCode.Accepted;
+                }
+            }
+            catch (Exception e)
+            {
+                throw new OnlineBankExceptions(e.Message);
+            }
+            return HttpStatusCode.Conflict;
+        }
+
+
+        public HttpStatusCode PayLoanEMIDAL(LoanPayment loanPayment)
+        {
+            _context.LoanPayments.Add(loanPayment);
+            try
+            {
+                int noOfRowsAffected = _context.SaveChanges();
+
+                if (noOfRowsAffected > 0)
+                {
+                    ReducePendingAmount(loanPayment.LoanApplicationId, loanPayment.PaymentAmount);
+                    return HttpStatusCode.Created;
+                }
+            }
+            catch (Exception e)
+            {
+                throw new OnlineBankExceptions(e.Message);
+            }
+            return HttpStatusCode.Created;
+        }
+
+
+        private void ReducePendingAmount(int loanApplicationId,int paidLoan)
+        {
+            LoanApplication loanApplication = _context.LoanApplications.FirstOrDefault(c => c.LoanApplicationId == loanApplicationId);
+            loanApplication.PendingPayment -= paidLoan;
+            _context.SaveChanges();
+        }
+
+
+        private double CalculateMonthlyInterest(double finalAmount, int tenure)
+        {
+            double monthlyAmount = finalAmount / (12 * tenure);
+            return monthlyAmount;
+        }
+
+
+        private LoanApplication LoanApplicationExists(int id)
+        {
+            return _context.LoanApplications.FirstOrDefault(c => c.LoanApplicationId == id);
+        }
+
+        private LoanApplication GetLoanTypeId(int id)
+        {
+            return (_context.LoanApplications.FirstOrDefault(c => c.LoanApplicationId == id));
+        }
+
+        private int GetROI(int loanTypeId)
+        {
+            return _context.LoanTypes.FirstOrDefault(c => c.LoanTypeId == loanTypeId).Roi;
+        }
+
+
+        public int GetPendingAmountDAL(int LoanApplicationId)
+        {
+            return Convert.ToInt32(_context.LoanApplications.FirstOrDefault(c => c.LoanApplicationId == LoanApplicationId).PendingPayment);
+        }
+
+    }
+}
