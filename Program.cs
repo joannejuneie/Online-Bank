@@ -1,3 +1,5 @@
+using Microsoft.EntityFrameworkCore;
+using Online_Banking_Portal.DAL.Models;
 
 namespace Online_Banking_Portal.API
 {
@@ -8,7 +10,8 @@ namespace Online_Banking_Portal.API
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+                ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
             builder.Services.AddControllers();
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -20,6 +23,22 @@ namespace Online_Banking_Portal.API
                 options.JsonSerializerOptions.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
                 options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve;
             });
+
+            // Add DbContext
+            builder.Services.AddDbContext<OnlineBankingPortalContext>(options =>
+                options.UseSqlServer(connectionString));
+
+            // Add CORS policy
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAllOrigins", builder =>
+                {
+                    builder.AllowAnyOrigin()
+                           .AllowAnyMethod()
+                           .AllowAnyHeader();
+                });
+            });
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -31,8 +50,12 @@ namespace Online_Banking_Portal.API
 
             app.UseHttpsRedirection();
 
-            app.UseAuthorization();
+            app.UseRouting();
 
+            // Add CORS middleware
+            app.UseCors("AllowAllOrigins");
+
+            app.UseAuthorization();
 
             app.MapControllers();
 
