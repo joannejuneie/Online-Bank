@@ -1,0 +1,94 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Online_Banking_Portal.Entities;
+using Online_Banking_Portal.DAL;
+using Online_Banking_Portal.Exceptions;
+using System.Net;
+using System.Reflection.Emit;
+
+
+namespace Online_Banking_Portal.BL
+{
+    public class LoanBL
+    {
+        public IEnumerable<LoanType> GetLoanBL()
+        {
+            try
+            {
+                LoanDAL loan = new LoanDAL();
+                return loan.GetLoanDAL();
+            }
+            catch (Exception ex)
+            {
+                throw new OnlineBankExceptions(ex.Message);
+            }
+
+
+
+        }
+
+        public HttpStatusCode AddLoanApplicationBL(LoanApplication loanApplication)
+        {
+            HttpStatusCode objCode = HttpStatusCode.Created;
+
+            try
+            {
+                LoanDAL objDAL = new LoanDAL();
+                objCode = objDAL.AddLoanApplicationDAL(loanApplication);
+            }
+            catch (Exception ex)
+            {
+                throw new OnlineBankExceptions(ex.Message);
+            }
+            return objCode;
+        }
+
+
+        public HttpStatusCode ApproveLoanBL(LoanApplication loanApplication)
+
+        {
+            try { 
+
+            LoanDAL objDAL = new LoanDAL();
+
+            HttpStatusCode objCode = objDAL.ApproveLoanDAL(loanApplication);
+
+            return objCode;
+        }
+             catch (Exception ex)
+            {
+                throw new OnlineBankExceptions(ex.Message);
+            }
+
+        }
+
+
+
+
+        public HttpStatusCode PayLoanEMIBL(LoanPayment loanPayment)
+
+        {
+            try
+            {
+
+                LoanDAL objDAL = new LoanDAL();
+                int pendingAmount = objDAL.GetPendingAmountDAL(loanPayment.LoanApplicationId);
+                if (pendingAmount > 0)
+                {
+                    HttpStatusCode objCode = objDAL.PayLoanEMIDAL(loanPayment);
+
+                    return objCode;
+                }
+                return HttpStatusCode.NotModified;
+            }
+            catch (Exception ex)
+            {
+                throw new OnlineBankExceptions(ex.Message);
+            }
+
+        }
+    }
+}
