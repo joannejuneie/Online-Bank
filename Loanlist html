@@ -1,0 +1,8 @@
+<div>
+  <h2>Loan Types</h2>
+  <ul>
+    <li *ngFor="let loanType of loanTypes">
+      {{ loanType.loanTypeName }}
+    </li>
+  </ul>
+</div>
