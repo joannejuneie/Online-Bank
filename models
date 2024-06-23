@@ -1,0 +1,20 @@
+export interface LoanType {
+  loanTypeId: number;
+  loanTypeName: string;
+}
+
+export interface LoanApplication {
+  loanApplicationId: number;
+  loanTypeId: number;
+  applicantName: string;
+  amountSanctioned: number;
+  tenure: number;
+  loanStatus: string;
+  pendingPayment: number;
+}
+
+export interface LoanPayment {
+  loanPaymentId: number;
+  loanApplicationId: number;
+  paymentAmount: number;
+}
