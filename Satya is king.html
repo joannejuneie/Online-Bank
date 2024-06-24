@@ -1,0 +1,22 @@
+<div *ngFor="let loan of approvedLoans">
+  <div>
+    <h3>Loan Application ID: {{loan.loanApplicationId}}</h3>
+    <p>Customer ID: {{loan.customerId}}</p>
+    <p>Loan Type ID: {{loan.loanTypeId}}</p>
+    <p>Amount Requested: {{loan.amountRequested}}</p>
+    <p>Date of Application: {{loan.dateOfApplication | date}}</p>
+    <p>Loan Status: {{loan.loanStatus}}</p>
+  </div>
+  <form (ngSubmit)="onSubmit(loan.loanApplicationId)">
+    <div>
+      <label>Sanction Amount:</label>
+      <input type="number" [(ngModel)]="loan.sanctionAmount" name="sanctionAmount{{loan.loanApplicationId}}" required>
+    </div>
+    <div>
+      <label>Status:</label>
+      <input type="text" [(ngModel)]="loan.loanStatus" name="loanStatus{{loan.loanApplicationId}}" required>
+    </div>
+    <button type="submit">Submit</button>
+  </form>
+  <hr>
+</div>
