@@ -1,0 +1,35 @@
+<div class="container">
+  <h2>Approved Loans</h2>
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>Loan ID</th>
+        <th>Customer ID</th>
+        <th>Loan Type ID</th>
+        <th>Amount Requested</th>
+        <th>Tenure</th>
+        <th>Sanction Amount</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let loan of approvedLoans">
+        <td>{{ loan.LoanApplicationId }}</td>
+        <td>{{ loan.CustomerId }}</td>
+        <td>{{ loan.LoanTypeId }}</td>
+        <td>{{ loan.AmountRequested }}</td>
+        <td>{{ loan.Tenure }}</td>
+        <td>
+          <input type="number" [(ngModel)]="sanctionAmount" placeholder="Sanction Amount" />
+        </td>
+        <td>
+          <input type="text" [(ngModel)]="status" placeholder="Status" />
+        </td>
+        <td>
+          <button (click)="updateLoanStatus(loan.LoanApplicationId)" class="btn btn-primary">Submit</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
