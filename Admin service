@@ -1,0 +1,22 @@
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class LoanService {
+  private apiUrl = environment.apiUrl + '/loans'; // Adjust the URL as needed
+
+  constructor(private http: HttpClient) { }
+
+  getApprovedLoans(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/approved`);
+  }
+
+  updateLoanStatus(loanId: number, sanctionAmount: number, status: string): Observable<any> {
+    const body = { loanId, sanctionAmount, status };
+    return this.http.put(`${this.apiUrl}/update-status`, body);
+  }
+}
