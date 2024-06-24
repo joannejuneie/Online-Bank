@@ -1,0 +1,27 @@
+[HttpPut]
+[Route("PUT/Loan/ApproveLoanApplication")]
+public async Task<IActionResult> PutApproveLoan(LoanApplication loanApplication)
+{
+    LoanBL objBL = new LoanBL();
+
+    if (!ModelState.IsValid)
+    {
+        return BadRequest(ModelState);
+    }
+    try
+    {
+        HttpStatusCode objCode;
+        objCode = objBL.ApproveLoanBL(loanApplication);
+        if (objCode == HttpStatusCode.Accepted)
+        {
+            return Ok(objCode);
+        }
+
+    }
+    catch (Exception e)
+    {
+        throw;
+    }
+
+    return NoContent();
+}
