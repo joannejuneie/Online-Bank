@@ -1,0 +1,65 @@
+ <div class="container">
+    <h2>Approval required Loans</h2>
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Loan ID</th>
+          <th>Customer ID</th>
+          <th>Loan Type ID</th>
+          <th>Amount Requested</th>
+          <th>Tenure</th>
+          <th>Sanction Amount</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let loan of approvedLoans">
+          <td>{{ loan.loanApplicationId }}</td>
+          <td>{{ loan.customerId }}</td>
+          <td>{{ loan.loanTypeId }}</td>
+          <td>{{ loan.amountRequested }}</td>
+          <td>{{ loan.tenure }}</td>
+          <td>
+           
+            <input type="number" [(ngModel)]="amountSanctioned[loan.loanApplicationId]" placeholder="Sanction Amount" />
+          </td>
+          <td><select name="cars" id="cars">
+            <option value="volvo">Volvo</option>
+            <option value="saab">Saab</option>
+          </td>
+       
+          <!-- <td>
+            <input type="text" [(ngModel)]="status[loan.loanApplicationId]" placeholder="Status" />
+          </td> -->
+          <td>
+            <button (click)="updateLoanStatus(loan.loanApplicationId)" class="btn btn-primary">Submit</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div> 
+ <!-- <input type="number" [(ngModel)]="selectedLoan.sanctionAmount" placeholder="Sanction Amount" /> -->
+
+  <!-- <div *ngFor="let loan of approvedLoans">
+    <div>
+      <h3>Loan Application ID: {{loan.loanApplicationId}}</h3>
+      <p>Customer ID: {{loan.customerId}}</p>
+      <p>Loan Type ID: {{loan.loanTypeId}}</p>
+      <p>Amount Requested: {{loan.amountRequested}}</p>
+      <p>Date of Application: {{loan.dateOfApplication | date}}</p>
+      <p>Loan Status: {{loan.loanStatus}}</p>
+    </div>
+    <form (ngSubmit)="onSubmit(loan.loanApplicationId)">
+      <div>
+        <label>Sanction Amount:</label>
+        <input type="number" [(ngModel)]="loan.sanctionAmount" name="sanctionAmount{{loan.loanApplicationId}}" required>
+      </div>
+      <div>
+        <label>Status:</label>
+        <input type="text" [(ngModel)]="loan.loanStatus" name="loanStatus{{loan.loanApplicationId}}" required>
+      </div>
+      <button type="submit">Submit</button>
+    </form>
+    <hr>
+  </div> -->
