@@ -1,0 +1,46 @@
+[HttpPost("SelfTransfer")]
+public async Task<IActionResult> SelfTransfer(long fromAccountNo, long toAccountNo, decimal amount)
+{
+    TransferFundsBL transferFundsBL = new TransferFundsBL();
+    transferFundsBL.SelfTransferBL(fromAccountNo,toAccountNo,amount);
+
+    if (fromAccountNo == toAccountNo)
+        return BadRequest("Cannot transfer to the same account");
+
+    var fromAccount = await _context.Accounts.FindAsync(fromAccountNo);
+    var toAccount = await _context.Accounts.FindAsync(toAccountNo);
+
+    if (fromAccount == null || toAccount == null)
+        return NotFound("One or both accounts not found");
+
+    if (fromAccount.CustomerId != toAccount.CustomerId)
+        return BadRequest("Accounts do not belong to the same customer");
+
+    if (fromAccount.Balance < amount)
+        return BadRequest("Insufficient balance");
+
+    fromAccount.Balance -= amount;
+    toAccount.Balance += amount;
+
+    var transactionFrom = new Transaction
+    {
+        AccountNo = fromAccountNo,
+        TransactionType = "Withdrawal",
+        Amount = amount,
+        TransactionDate = DateTime.Now
+    };
+
+    var transactionTo = new Transaction
+    {
+        AccountNo = toAccountNo,
+        TransactionType = "Deposit",
+        Amount = amount,
+        TransactionDate = DateTime.Now
+    };
+
+    await _context.Transactions.AddRangeAsync(transactionFrom, transactionTo);
+    await _context.SaveChangesAsync();
+
+    //return Ok("Transfer successful");
+    return Created();
+}
