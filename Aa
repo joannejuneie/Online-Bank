@@ -1,0 +1,104 @@
+public class AccountRepository
+{
+    private readonly YourDbContext _context;
+
+    public AccountRepository(YourDbContext context)
+    {
+        _context = context;
+    }
+
+    public async Task<Account> GetAccountAsync(long accountNo)
+    {
+        return await _context.Accounts.FindAsync(accountNo);
+    }
+
+    public async Task AddTransactionsAsync(Transaction transactionFrom, Transaction transactionTo)
+    {
+        await _context.Transactions.AddRangeAsync(transactionFrom, transactionTo);
+        await _context.SaveChangesAsync();
+    }
+}
+
+
+
+public class TransferFundsBL
+{
+    private readonly AccountRepository _accountRepository;
+
+    public TransferFundsBL(AccountRepository accountRepository)
+    {
+        _accountRepository = accountRepository;
+    }
+
+    public async Task<string> SelfTransferBL(long fromAccountNo, long toAccountNo, decimal amount)
+    {
+        if (fromAccountNo == toAccountNo)
+            return "Cannot transfer to the same account";
+
+        var fromAccount = await _accountRepository.GetAccountAsync(fromAccountNo);
+        var toAccount = await _accountRepository.GetAccountAsync(toAccountNo);
+
+        if (fromAccount == null || toAccount == null)
+            return "One or both accounts not found";
+
+        if (fromAccount.CustomerId != toAccount.CustomerId)
+            return "Accounts do not belong to the same customer";
+
+        if (fromAccount.Balance < amount)
+            return "Insufficient balance";
+
+        fromAccount.Balance -= amount;
+        toAccount.Balance += amount;
+
+        var transactionFrom = new Transaction
+        {
+            AccountNo = fromAccountNo,
+            TransactionType = "Withdrawal",
+            Amount = amount,
+            TransactionDate = DateTime.Now
+        };
+
+        var transactionTo = new Transaction
+        {
+            AccountNo = toAccountNo,
+            TransactionType = "Deposit",
+            Amount = amount,
+            TransactionDate = DateTime.Now
+        };
+
+        await _accountRepository.AddTransactionsAsync(transactionFrom, transactionTo);
+
+        return "Transfer successful";
+    }
+}
+
+
+
+[ApiController]
+[Route("[controller]")]
+public class TransferController : ControllerBase
+{
+    private readonly ITransferFundsService _transferFundsService;
+
+    public TransferController(ITransferFundsService transferFundsService)
+    {
+        _transferFundsService = transferFundsService;
+    }
+
+    [HttpPost("SelfTransfer")]
+    public async Task<IActionResult> SelfTransfer(long fromAccountNo, long toAccountNo, decimal amount)
+    {
+        var result = await _transferFundsService.SelfTransferAsync(fromAccountNo, toAccountNo, amount);
+
+        return result switch
+        {
+            "Transfer successful" => Created("", result),
+            "Cannot transfer to the same account" => BadRequest(result),
+            "One or both accounts not found" => NotFound(result),
+            "Accounts do not belong to the same customer" => BadRequest(result),
+            "Insufficient balance" => BadRequest(result),
+            _ => BadRequest("An error occurred")
+        };
+    }
+}
+
