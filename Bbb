@@ -1,0 +1,22 @@
+using System;
+using System.Xml;
+
+public class PreventXXE
+{
+    public static void Main(string[] args)
+    {
+        XmlReaderSettings settings = new XmlReaderSettings();
+        settings.DtdProcessing = DtdProcessing.Prohibit;
+        settings.XmlResolver = null;  // Disable resolving external resources
+        settings.MaxCharactersFromEntities = 1024;  // Optional limit for additional security
+        settings.MaxCharactersInDocument = 1024 * 1024;  // Optional limit for additional security
+
+        using (XmlReader reader = XmlReader.Create("path/to/your/xmlfile.xml", settings))
+        {
+            while (reader.Read())
+            {
+                // Process XML
+            }
+        }
+    }
+}
