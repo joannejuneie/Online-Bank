@@ -1,0 +1,37 @@
+### Pillars of Scrum
+1. **Transparency**: Making all aspects of the process open and accessible to everyone involved.
+2. **Inspection**: Continuously evaluating scrum artifacts and progress towards sprint goals to spot any issues.
+3. **Adaptation**: Tweaking processes to improve effectiveness based on what is learned from inspections.
+
+### Scrum Values
+1. **Focus**: Keeping attention on sprint goals to deliver value efficiently.
+2. **Respect**: Valuing each team member’s contributions and maintaining a supportive and collaborative environment.
+3. **Courage**: Taking on difficult tasks and making tough decisions with confidence.
+4. **Commitment**: Being dedicated to the team's objectives and doing what is necessary to achieve them.
+5. **Openness**: Sharing progress, feedback, and challenges openly.
+
+### Different Roles in Scrum
+1. **Scrum Master**: Guides the scrum process, helps remove impediments, and ensures the team adheres to agile practices.
+2. **Product Owner**: Oversees the product backlog, sets priorities, and represents the customer's needs.
+3. **Development Team**: A versatile group responsible for delivering completed product increments each sprint.
+
+### Scrum Process
+1. **Sprint**: A set period (usually 2-4 weeks) where the team focuses on delivering a specific product increment.
+2. **Sprint Planning**: A meeting at the start of the sprint where the scrum master, development team, and product owner agree on the sprint goal and select items from the backlog.
+3. **Daily Scrum**: A brief daily meeting (about 15 minutes) where the team discusses progress and plans for the next 24 hours, facilitated by the scrum master.
+4. **Sprint Review**: A meeting at the end of the sprint where the team presents their completed work to the product owner and stakeholders, and updates the backlog as needed.
+5. **Sprint Retrospective**: A session for the team to reflect on the sprint, discuss what went well and what didn’t, and identify improvements for future sprints.
+
+### User Stories
+User stories are concise, straightforward descriptions of a feature or functionality from the user's or customer's perspective. They capture requirements in an Agile setting and usually follow this format: "As a…(user), I want… (goal) so that… (reason)".
+
+### INVEST Model in Agile
+1. **Independent**: Ensuring user stories can be developed and delivered without dependencies on others.
+2. **Negotiable**: Keeping stories flexible and open to discussion and changes.
+3. **Valuable**: Crafting user stories that offer value to the customer.
+4. **Estimable**: Making sure stories are clear enough to estimate the effort needed.
+5. **Small**: Breaking stories down into sizes that can be completed within a sprint.
+6. **Testable**: Writing stories in a way that allows for objective testing to verify completion.
+
+### Velocity in User Stories
+Velocity is a metric that shows how much work a scrum team can complete in a sprint. It's calculated by adding up the story points of all the user stories finished during the sprint. This helps teams gauge their capacity for future sprints and plan their workload accordingly.
